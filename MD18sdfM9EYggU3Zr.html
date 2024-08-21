@@ -1,0 +1,391 @@
+<html><head><base href="https://example.com/torneo-fifa/"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Torneo de FIFA - Registro y Posiciones</title><style>
+    body {
+        font-family: Arial, sans-serif;
+        background-image: url('https://image.cdn2.seaart.ai/2024-08-21/cr2jqble878c73eds190/bc6bf218d17acb733ab2e5b9898956c7_high.webp');
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+    }
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+        color: #1a73e8;
+        text-align: center;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+    label {
+        margin-top: 10px;
+        font-weight: bold;
+    }
+    input, select {
+        margin-bottom: 15px;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    button {
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+    button:hover {
+        background-color: #155db1;
+    }
+    #partidosRegistrados, #tablaPosiciones {
+        margin-top: 20px;
+    }
+    .partido {
+        background-color: rgba(232, 240, 254, 0.8);
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #1a73e8;
+        color: white;
+    }
+    tr:nth-child(even) {
+        background-color: rgba(242, 242, 242, 0.8);
+    }
+    #equiposLista {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .equipo-item {
+        background-color: rgba(232, 240, 254, 0.8);
+        padding: 5px 10px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        transition: background-color 0.3s ease;
+    }
+    .equipo-item:hover {
+        background-color: rgba(200, 220, 254, 0.9);
+    }
+    .equipo-item button {
+        margin-left: 10px;
+        padding: 2px 5px;
+        font-size: 12px;
+    }
+    @media (max-width: 600px) {
+        .container {
+            padding: 10px;
+        }
+        table {
+            font-size: 14px;
+        }
+    }
+</style></head><body>
+    <div class="container">
+        <h1>Torneo de FIFA</h1>
+        
+        <form id="registroEquipo">
+            <h2>Registro de Equipos</h2>
+            <label for="nuevoEquipo">Nombre del Equipo:</label>
+            <input type="text" id="nuevoEquipo" required>
+            <button type="submit">Añadir Equipo</button>
+        </form>
+
+        <div id="equiposLista">
+            <!-- Aquí se mostrarán los equipos registrados -->
+        </div>
+        
+        <form id="registroPartido">
+            <h2>Registro de Partidos</h2>
+            <label for="equipo1">Equipo 1:</label>
+            <select id="equipo1" required></select>
+            
+            <label for="equipo2">Equipo 2:</label>
+            <select id="equipo2" required></select>
+            
+            <label for="golesE1">Goles de Equipo 1:</label>
+            <input type="number" id="golesE1" min="0" required>
+            
+            <label for="golesE2">Goles de Equipo 2:</label>
+            <input type="number" id="golesE2" min="0" required>
+            
+            <label for="fase">Fase del Torneo:</label>
+            <select id="fase" required>
+                <option value="Grupos">Fase de Grupos</option>
+                <option value="Octavos">Octavos de Final</option>
+                <option value="Cuartos">Cuartos de Final</option>
+                <option value="Semifinal">Semifinal</option>
+                <option value="Final">Final</option>
+            </select>
+            
+            <button type="submit">Registrar Partido</button>
+        </form>
+        
+        <div id="partidosRegistrados">
+            <h2>Partidos Registrados</h2>
+            <!-- Aquí se mostrarán los partidos registrados -->
+        </div>
+
+        <div id="tablaPosiciones">
+            <h2>Tabla de Posiciones</h2>
+            <table id="posicionesTabla">
+                <thead>
+                    <tr>
+                        <th>Equipo</th>
+                        <th>PJ</th>
+                        <th>PG</th>
+                        <th>PE</th>
+                        <th>PP</th>
+                        <th>GF</th>
+                        <th>GC</th>
+                        <th>DG</th>
+                        <th>Pts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se mostrarán las posiciones -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const formEquipo = document.getElementById('registroEquipo');
+        const formPartido = document.getElementById('registroPartido');
+        const equiposLista = document.getElementById('equiposLista');
+        const partidosRegistrados = document.getElementById('partidosRegistrados');
+        const posicionesTabla = document.getElementById('posicionesTabla').getElementsByTagName('tbody')[0];
+        const selectEquipo1 = document.getElementById('equipo1');
+        const selectEquipo2 = document.getElementById('equipo2');
+        let equipos = JSON.parse(localStorage.getItem('equipos')) || [];
+        let partidos = JSON.parse(localStorage.getItem('partidos')) || [];
+        let posiciones = JSON.parse(localStorage.getItem('posiciones')) || {};
+
+        function actualizarListaEquipos() {
+            equiposLista.innerHTML = '';
+            selectEquipo1.innerHTML = '<option value="">Seleccione un equipo</option>';
+            selectEquipo2.innerHTML = '<option value="">Seleccione un equipo</option>';
+            equipos.forEach((equipo, index) => {
+                const equipoElement = document.createElement('div');
+                equipoElement.classList.add('equipo-item');
+                equipoElement.innerHTML = `
+                    ${equipo}
+                    <button onclick="eliminarEquipo(${index})">Eliminar</button>
+                `;
+                equiposLista.appendChild(equipoElement);
+
+                const option1 = document.createElement('option');
+                option1.value = equipo;
+                option1.textContent = equipo;
+                selectEquipo1.appendChild(option1);
+
+                const option2 = document.createElement('option');
+                option2.value = equipo;
+                option2.textContent = equipo;
+                selectEquipo2.appendChild(option2);
+            });
+        }
+
+        function actualizarListaPartidos() {
+            partidosRegistrados.innerHTML = '<h2>Partidos Registrados</h2>';
+            partidos.forEach((partido, index) => {
+                const partidoElement = document.createElement('div');
+                partidoElement.classList.add('partido');
+                partidoElement.innerHTML = `
+                    <p><strong>${partido.fase}</strong>: ${partido.equipo1} ${partido.golesE1} - ${partido.golesE2} ${partido.equipo2}</p>
+                    <button onclick="eliminarPartido(${index})">Eliminar</button>
+                `;
+                partidosRegistrados.appendChild(partidoElement);
+            });
+        }
+
+        function actualizarTablaPosiciones() {
+            const equipos = Object.keys(posiciones).sort((a, b) => {
+                return posiciones[b].puntos - posiciones[a].puntos || 
+                       posiciones[b].diferenciaGoles - posiciones[a].diferenciaGoles;
+            });
+
+            posicionesTabla.innerHTML = '';
+            equipos.forEach(equipo => {
+                const fila = posicionesTabla.insertRow();
+                const datos = posiciones[equipo];
+                fila.innerHTML = `
+                    <td>${equipo}</td>
+                    <td>${datos.partidosJugados}</td>
+                    <td>${datos.partidosGanados}</td>
+                    <td>${datos.partidosEmpatados}</td>
+                    <td>${datos.partidosPerdidos}</td>
+                    <td>${datos.golesFavor}</td>
+                    <td>${datos.golesContra}</td>
+                    <td>${datos.diferenciaGoles}</td>
+                    <td>${datos.puntos}</td>
+                `;
+            });
+        }
+
+        function actualizarPosiciones(equipo1, equipo2, goles1, goles2) {
+            [equipo1, equipo2].forEach(equipo => {
+                if (!posiciones[equipo]) {
+                    posiciones[equipo] = {
+                        partidosJugados: 0, partidosGanados: 0, partidosEmpatados: 0,
+                        partidosPerdidos: 0, golesFavor: 0, golesContra: 0,
+                        diferenciaGoles: 0, puntos: 0
+                    };
+                }
+            });
+
+            posiciones[equipo1].partidosJugados++;
+            posiciones[equipo2].partidosJugados++;
+            posiciones[equipo1].golesFavor += goles1;
+            posiciones[equipo1].golesContra += goles2;
+            posiciones[equipo2].golesFavor += goles2;
+            posiciones[equipo2].golesContra += goles1;
+
+            if (goles1 > goles2) {
+                posiciones[equipo1].partidosGanados++;
+                posiciones[equipo1].puntos += 3;
+                posiciones[equipo2].partidosPerdidos++;
+            } else if (goles1 < goles2) {
+                posiciones[equipo2].partidosGanados++;
+                posiciones[equipo2].puntos += 3;
+                posiciones[equipo1].partidosPerdidos++;
+            } else {
+                posiciones[equipo1].partidosEmpatados++;
+                posiciones[equipo2].partidosEmpatados++;
+                posiciones[equipo1].puntos++;
+                posiciones[equipo2].puntos++;
+            }
+
+            posiciones[equipo1].diferenciaGoles = posiciones[equipo1].golesFavor - posiciones[equipo1].golesContra;
+            posiciones[equipo2].diferenciaGoles = posiciones[equipo2].golesFavor - posiciones[equipo2].golesContra;
+
+            localStorage.setItem('posiciones', JSON.stringify(posiciones));
+        }
+
+        function eliminarEquipo(index) {
+            const equipoEliminado = equipos[index];
+            equipos.splice(index, 1);
+            localStorage.setItem('equipos', JSON.stringify(equipos));
+            
+            delete posiciones[equipoEliminado];
+            localStorage.setItem('posiciones', JSON.stringify(posiciones));
+            
+            partidos = partidos.filter(partido => 
+                partido.equipo1 !== equipoEliminado && partido.equipo2 !== equipoEliminado
+            );
+            localStorage.setItem('partidos', JSON.stringify(partidos));
+            
+            actualizarListaEquipos();
+            actualizarListaPartidos();
+            actualizarTablaPosiciones();
+        }
+
+        function eliminarPartido(index) {
+            const partido = partidos[index];
+            partidos.splice(index, 1);
+            localStorage.setItem('partidos', JSON.stringify(partidos));
+            
+            const equipo1 = partido.equipo1;
+            const equipo2 = partido.equipo2;
+            const goles1 = parseInt(partido.golesE1);
+            const goles2 = parseInt(partido.golesE2);
+
+            [equipo1, equipo2].forEach(equipo => {
+                posiciones[equipo].partidosJugados--;
+                posiciones[equipo].golesFavor -= equipo === equipo1 ? goles1 : goles2;
+                posiciones[equipo].golesContra -= equipo === equipo1 ? goles2 : goles1;
+                posiciones[equipo].diferenciaGoles = posiciones[equipo].golesFavor - posiciones[equipo].golesContra;
+            });
+
+            if (goles1 > goles2) {
+                posiciones[equipo1].partidosGanados--;
+                posiciones[equipo1].puntos -= 3;
+                posiciones[equipo2].partidosPerdidos--;
+            } else if (goles1 < goles2) {
+                posiciones[equipo2].partidosGanados--;
+                posiciones[equipo2].puntos -= 3;
+                posiciones[equipo1].partidosPerdidos--;
+            } else {
+                posiciones[equipo1].partidosEmpatados--;
+                posiciones[equipo2].partidosEmpatados--;
+                posiciones[equipo1].puntos--;
+                posiciones[equipo2].puntos--;
+            }
+
+            localStorage.setItem('posiciones', JSON.stringify(posiciones));
+            actualizarListaPartidos();
+            actualizarTablaPosiciones();
+        }
+
+        window.eliminarEquipo = eliminarEquipo;
+        window.eliminarPartido = eliminarPartido;
+
+        formEquipo.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nuevoEquipo = document.getElementById('nuevoEquipo').value;
+            if (equipos.length < 11 && !equipos.includes(nuevoEquipo)) {
+                equipos.push(nuevoEquipo);
+                localStorage.setItem('equipos', JSON.stringify(equipos));
+                actualizarListaEquipos();
+                formEquipo.reset();
+            } else {
+                alert('No se puede añadir más de 11 equipos o el equipo ya existe.');
+            }
+        });
+
+        formPartido.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nuevoPartido = {
+                equipo1: document.getElementById('equipo1').value,
+                equipo2: document.getElementById('equipo2').value,
+                golesE1: document.getElementById('golesE1').value,
+                golesE2: document.getElementById('golesE2').value,
+                fase: document.getElementById('fase').value
+            };
+            if (nuevoPartido.equipo1 === nuevoPartido.equipo2) {
+                alert('No se puede registrar un partido entre el mismo equipo.');
+                return;
+            }
+            partidos.push(nuevoPartido);
+            localStorage.setItem('partidos', JSON.stringify(partidos));
+            
+            actualizarPosiciones(nuevoPartido.equipo1, nuevoPartido.equipo2, 
+                                 parseInt(nuevoPartido.golesE1), parseInt(nuevoPartido.golesE2));
+            
+            actualizarListaPartidos();
+            actualizarTablaPosiciones();
+            formPartido.reset();
+        });
+
+        actualizarListaEquipos();
+        actualizarListaPartidos();
+        actualizarTablaPosiciones();
+    });
+    </script>
+</body></html>
